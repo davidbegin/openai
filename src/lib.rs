@@ -78,8 +78,12 @@ where
     T: DeserializeOwned,
 {
     let api_response = openai_request(method, route, builder).await?.json().await?;
+
     match api_response {
-        ApiResponse::Ok(t) => Ok(t),
+        ApiResponse::Ok(t) => {
+            println!("\n\nWe MATCHED");
+            Ok(t)
+        }
         ApiResponse::Err { error } => Err(error),
     }
 }
@@ -90,9 +94,7 @@ where
 {
     let client = Client::new();
     let mut request = client.request(method, get_base_url().lock().unwrap().to_owned() + route);
-
     request = builder(request);
-
     let response = request
         .header(AUTHORIZATION, format!("Bearer {}", API_KEY.lock().unwrap()))
         .send()
